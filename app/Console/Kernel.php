@@ -24,7 +24,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-
+        $schedule->call(function(){
+          dispatch(new PaigQueue());
+        })->dailyAt("6:50")->timezone("Australia/Sydney");
         // $schedule->command('inspire')->hourly();
     }
 
