@@ -23,10 +23,8 @@ Route::get('/', function () {
 
 Route::get("/runJobs",'Admin\JobController@runLocationListingJobs');
 
-Auth::routes();
+Auth::routes(['register'=>false]);
 
 Route::get('/home', 'HomeController@index')->name('home');
 
 Route::get("/hello","HomeController@hello");
-
-
