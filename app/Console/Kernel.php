@@ -26,7 +26,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->call(function(){
           dispatch(new PaigQueue());
-        })->dailyAt("6:50")->timezone("Australia/Sydney");
+        })->dailyAt("19:00")->timezone("Australia/Sydney");
         // $schedule->command('inspire')->hourly();
     }
 
