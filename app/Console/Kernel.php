@@ -27,6 +27,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->call(function(){
+          Log::notice("I am been runned");
           dispatch(new PaigQueue());
         })->dailyAt("19:33")->timezone("Australia/Sydney");
         $schedule->call(function(){
