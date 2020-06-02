@@ -18,7 +18,7 @@ return [
     |
     */
 
-    'default' => env('CACHE_DRIVER', 'file'),
+    'default' => 'file',
 
     /*
     |--------------------------------------------------------------------------
@@ -74,7 +74,7 @@ return [
 
         'redis' => [
           'client' => 'redis',
-          
+
 
         ],
 
