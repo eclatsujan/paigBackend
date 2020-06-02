@@ -28,7 +28,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->call(function(){
           dispatch(new PaigQueue());
-        })->dailyAt("19:20")->timezone("Australia/Sydney");
+        })->dailyAt("19:33")->timezone("Australia/Sydney");
         $schedule->call(function(){
           Log::notice("I am running");
         })->everyMinute();
