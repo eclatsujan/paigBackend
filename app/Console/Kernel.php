@@ -30,10 +30,6 @@ class Kernel extends ConsoleKernel
           Log::notice("I am been runned");
           dispatch(new PaigQueue());
         })->dailyAt("19:55")->timezone("Australia/Sydney");
-        $schedule->call(function(){
-          Log::notice("I am running");
-        })->everyMinute();
-        // $schedule->command('inspire')->hourly();
     }
 
     /**

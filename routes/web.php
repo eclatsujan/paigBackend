@@ -24,8 +24,10 @@ Route::get('/', function () {
 Route::get('/home', 'HomeController@index')->name('home');
 
 Route::middleware("auth")->prefix("admin")->group(function(){
+    Route::get("settings","Admin\SettingController@view");
+    Route::post("settings","Admin\SettingController@save");
     Route::get("clients","Admin\ClientController@viewClients");
     Route::get("jobs/view",'Admin\JobController@viewJobs');
-    Route::get("jobs/run",'Admin\JobController@runLocationListingJobs');
+    Route::get("job/run",'Admin\JobController@runLocationListingJobs');
 });
 

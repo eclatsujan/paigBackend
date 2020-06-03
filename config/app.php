@@ -174,7 +174,9 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-
+        //  To Handle Logging and Email for queue
+        App\Providers\QueueServiceProvider::class,
+        App\Providers\RepositoryServiceProvider::class
     ],
 
     /*

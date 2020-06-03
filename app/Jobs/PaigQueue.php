@@ -3,6 +3,7 @@ namespace App\Jobs;
 
 
 use App\Services\PaigAPI;
+use Illuminate\Support\Facades\Log;
 
 class PaigQueue extends Job
 {
@@ -13,17 +14,11 @@ class PaigQueue extends Job
      */
     public function handle()
     {
-        try{
-            $paig=app(PaigAPI::class);
-            $res=$paig->getPropertyListings(1);
-            for($i=0;$i<$res["page_total"];$i++){
-                dispatch(new PaigAPIJob($i));
-            }
+        $paig=app(PaigAPI::class);
+        $res=$paig->getPropertyListings(1);
+        for($i=0;$i<$res["page_total"];$i++){
+            dispatch(new PaigAPIJob($i));
         }
-        catch(\Exception $e){
-
-        }
-
 
     }
 }
