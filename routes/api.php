@@ -19,12 +19,12 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::middleware(['auth','cors'])->group(function(){
-    //For API Access
-    Route::get('/getInitialData','Front\APIController@getInitialData');
-    Route::get("/list","Front\APIController@getAllListings");
-    Route::get("/list/detail/{display_id}","Front\APIController@singleDetail");
-});
 
+});
+//For API Access
+Route::get('/getInitialData','Front\APIController@getInitialData');
+Route::get("/list","Front\APIController@getAllListings");
+Route::get("/list/detail/{display_id}","Front\APIController@singleDetail");
 
 //Route::get('/reqProperties',function(Request $request){
 //
