@@ -18,7 +18,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::middleware('auth')->group(function(){
+Route::middleware(['auth','cors'])->group(function(){
     //For API Access
     Route::get('/getInitialData','Front\APIController@getInitialData');
     Route::get("/list","Front\APIController@getAllListings");
