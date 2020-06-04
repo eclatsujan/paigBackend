@@ -5,6 +5,7 @@ namespace App\Providers;
 
 
 use App\Mail\JobStart;
+use App\Repositories\Admin\SettingRepository;
 use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Queue\Events\JobProcessing;
@@ -31,11 +32,28 @@ class QueueServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(SettingRepository $setting_repo)
     {
-        Queue::before(function ( JobProcessing $event ) {
+        $settings=$setting_repo->getSettings([
+            'email',
+            'cc_email',
+            'bcc_email'
+        ]);
+        if(!isset($settings["email"])){
+            $settings["email"]="";
+        }
+        if(!isset($settings["email"])){
+            $settings["cc_email"]="";
+        }
+        if(!isset($settings["email"])){
+            $settings["bcc_email"]="";
+        }
+        Queue::before(function (JobProcessing $event ) use($settings){
             if($event->job->resolveName()==="API\Jobs\PaigQueue"){
-                Mail::to("sujan.paig@outlook.com")->send(new JobStart());
+                Mail::to($settings["email"])
+                    ->cc($settings["cc_email"])
+                    ->bcc($settings["bcc_email"])
+                    ->send(new JobStart());
             }
             if($event->job->resolveName()==="App\Jobs\PaigAPIJob"){
                 $msg="The job number ".$event->job->getJobId()." has been started.";
@@ -43,16 +61,23 @@ class QueueServiceProvider extends ServiceProvider
             }
         });
 
-        Queue::after(function ( JobProcessed $event ) {
+        Queue::after(function ( JobProcessed $event ) use($settings) {
             if($event->job->resolveName()==="App\Jobs\PaigAPIJob"){
                 $msg="The job number ".$event->job->getJobId()." has been finished.";
                 Log::channel("paigapi")->info($msg);
+                Mail::to($settings["email"])
+                    ->cc($settings["cc_email"])
+                    ->bcc($settings["bcc_email"])
+                    ->send(new JobProcessed());
             }
         });
 
-        Queue::failing(function ( JobFailed $event ) {
+        Queue::failing(function ( JobFailed $event ) use($settings) {
             if($event->job->resolveName()==="API\Jobs\PaigQueue"){
-                Mail::to("sujan.paig@outlook.com")->send(new \App\Mail\JobFailed());
+                Mail::to($settings["email"])
+                    ->cc($settings["cc_email"])
+                    ->bcc($settings["bcc_email"])
+                    ->send(new \App\Mail\JobFailed());
             }
             if($event->job->resolveName()==="App\Jobs\PaigAPIJob"){
                 $msg="The job number ".$event->job->getJobId()." has been failed.";
