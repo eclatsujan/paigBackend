@@ -32,27 +32,13 @@ class QueueServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot(SettingRepository $setting_repo)
+    public function boot()
     {
-        $settings=$setting_repo->getSettings([
-            'email',
-            'cc_email',
-            'bcc_email'
-        ]);
-        if(!isset($settings["email"])){
-            $settings["email"]="";
-        }
-        if(!isset($settings["email"])){
-            $settings["cc_email"]="";
-        }
-        if(!isset($settings["email"])){
-            $settings["bcc_email"]="";
-        }
         Queue::before(function (JobProcessing $event ) use($settings){
             if($event->job->resolveName()==="API\Jobs\PaigQueue"){
-                Mail::to($settings["email"])
-                    ->cc($settings["cc_email"])
-                    ->bcc($settings["bcc_email"])
+                Mail::to("sujan.paig@outlook.com,ramesh.paig@outlook.com")
+//                    ->cc($settings["cc_email"])
+//                    ->bcc($settings["bcc_email"])
                     ->send(new JobStart());
             }
             if($event->job->resolveName()==="App\Jobs\PaigAPIJob"){
@@ -65,18 +51,14 @@ class QueueServiceProvider extends ServiceProvider
             if($event->job->resolveName()==="App\Jobs\PaigAPIJob"){
                 $msg="The job number ".$event->job->getJobId()." has been finished.";
                 Log::channel("paigapi")->info($msg);
-                Mail::to($settings["email"])
-                    ->cc($settings["cc_email"])
-                    ->bcc($settings["bcc_email"])
+                Mail::to("sujan.paig@outlook.com,ramesh.paig@outlook.com")
                     ->send(new JobProcessed());
             }
         });
 
         Queue::failing(function ( JobFailed $event ) use($settings) {
             if($event->job->resolveName()==="API\Jobs\PaigQueue"){
-                Mail::to($settings["email"])
-                    ->cc($settings["cc_email"])
-                    ->bcc($settings["bcc_email"])
+                Mail::to("sujan.paig@outlook.com,ramesh.paig@outlook.com")
                     ->send(new \App\Mail\JobFailed());
             }
             if($event->job->resolveName()==="App\Jobs\PaigAPIJob"){
