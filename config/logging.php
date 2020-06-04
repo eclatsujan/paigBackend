@@ -99,6 +99,12 @@ return [
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],
+        'paigapi'=>[
+            'driver' => 'daily',
+            'path'=>storage_path('logs/paigapi.log'),
+            'level'=>'debug',
+            'days'=>7
+        ]
     ],
 
 ];

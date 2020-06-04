@@ -15,16 +15,19 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Auth::routes();
+Auth::routes(['register'=>false]);
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get("/runJobs",'Admin\JobController@runLocationListingJobs');
-
-Auth::routes(['register'=>false]);
-
 Route::get('/home', 'HomeController@index')->name('home');
 
-Route::get("/hello","HomeController@hello");
+Route::middleware("auth")->prefix("admin")->group(function(){
+    Route::get("settings","Admin\SettingController@view");
+    Route::post("settings","Admin\SettingController@save");
+    Route::get("clients","Admin\ClientController@viewClients");
+    Route::get("jobs/view",'Admin\JobController@viewJobs');
+    Route::get("job/run",'Admin\JobController@runLocationListingJobs');
+});
+
