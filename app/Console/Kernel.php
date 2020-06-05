@@ -29,7 +29,7 @@ class Kernel extends ConsoleKernel
         $schedule->call(function(){
           Log::notice("I am been runned");
           dispatch(new PaigQueue());
-        })->dailyAt("12:30")->timezone("Australia/Sydney");
+        })->dailyAt("12:37")->timezone("Australia/Sydney");
     }
 
     /**
