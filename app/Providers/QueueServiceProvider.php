@@ -37,8 +37,6 @@ class QueueServiceProvider extends ServiceProvider
         Queue::before(function (JobProcessing $event ) {
             if($event->job->resolveName()==="API\Jobs\PaigQueue"){
                 Mail::to("sujan.paig@outlook.com,ramesh.paig@outlook.com")
-//                    ->cc($settings["cc_email"])
-//                    ->bcc($settings["bcc_email"])
                     ->send(new JobStart());
             }
             if($event->job->resolveName()==="App\Jobs\PaigAPIJob"){
