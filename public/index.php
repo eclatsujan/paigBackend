@@ -1,5 +1,6 @@
 <?php
-
+var_dump($_SERVER);
+die;
 /**
  * Laravel - A PHP Framework For Web Artisans
  *
