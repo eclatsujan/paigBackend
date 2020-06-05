@@ -6,7 +6,7 @@ use Illuminate\Cookie\Middleware\EncryptCookies as Middleware;
 
 class EncryptCookies extends Middleware
 {
-//    protected static $serialize = false;
+    protected static $serialize = false;
     /**
      * The names of the cookies that should not be encrypted.
      *
@@ -14,5 +14,6 @@ class EncryptCookies extends Middleware
      */
     protected $except = [
         //
+        'api/*'
     ];
 }
