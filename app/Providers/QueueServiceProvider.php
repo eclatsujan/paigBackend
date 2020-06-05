@@ -51,8 +51,6 @@ class QueueServiceProvider extends ServiceProvider
             if($event->job->resolveName()==="App\Jobs\PaigAPIJob"){
                 $msg="The job number ".$event->job->getJobId()." has been finished.";
                 Log::channel("paigapi")->info($msg);
-                Mail::to("sujan.paig@outlook.com,ramesh.paig@outlook.com")
-                    ->send(new JobProcessed());
             }
         });
 
