@@ -119,6 +119,14 @@ class PropertyDBService
                 $property->attachments=unserialize($property->attachments);
             }
             $property->lists=$this->getChildListing((int)$property->property_id);
+            
+            if(intval($property->parent_property_id)!==0){
+                $property->parent_property_data=$this->getParentPropertyData($property->parent_property_id);
+                
+                if($property->parent_property_data && $property->parent_property_data->attachments !== ""){
+                    $property->parent_property_data->attachments=unserialize($property->parent_property_data->attachments);
+                }
+            }
         }
 
         return $property;
@@ -131,6 +139,13 @@ class PropertyDBService
                 ->where("status","!=","Off Market")
                 ->orderBy("from_price","asc")
                 ->get();
+
+    }
+
+    public function getParentPropertyData($parent_property_id){
+        return app('db')->table("properties")->select("display_id","attachments")
+                ->where("property_id",$parent_property_id)
+                ->first();
 
     }
 
