@@ -23,4 +23,6 @@ Route::middleware(['client_credentials'])->group(function(){
     Route::get('/getInitialData','Front\APIController@getInitialData');
     Route::get("/list","Front\APIController@getAllListings");
     Route::get("/list/detail/{display_id}","Front\APIController@singleDetail");
+    Route::get("/suggestedKeyword","Front\APIController@suggestKeyword");
 });
+ 

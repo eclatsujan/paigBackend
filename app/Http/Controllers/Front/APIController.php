@@ -36,4 +36,11 @@ class APIController extends Controller
         }
     }
 
+
+    public function suggestKeyword(Request $request){
+        
+        $search_term = $request->get('search_term');
+        return response()->json($this->propertyDB->getSuggestedKeyword($search_term),200);
+    }
+
 }
