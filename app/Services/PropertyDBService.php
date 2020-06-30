@@ -81,7 +81,8 @@ class PropertyDBService
 
         $property_query = $this->property_table
             ->where($conditions)
-            ->where("status", "!=", "Off Market");
+            ->where("status", "!=", "Off Market")
+            ->where("status", "!=", "Selling Fast");
 
         $keyword = $request->get("keyword");
 
