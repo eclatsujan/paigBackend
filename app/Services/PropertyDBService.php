@@ -176,9 +176,11 @@ class PropertyDBService
 
     public function getChildListing($property_id)
     {
+        
         return app('db')->table("properties")->select("*")
             ->where("parent_property_id", $property_id)
             ->where("status", "!=", "Off Market")
+            ->where("status", "!=", "Sold")
             ->orderBy("from_price", "asc")
             ->get();
     }
