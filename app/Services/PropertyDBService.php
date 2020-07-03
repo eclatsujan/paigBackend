@@ -31,7 +31,9 @@ class PropertyDBService
         }
         if ($request->has("strategy_type")) {
             if (!empty($request->get("strategy_type"))) {
-                $conditions[] = ["strategy_type", "=", $request->get("strategy_type")];
+                $strategy_type=$request->get("strategy_type");
+                $strategy_type=$this->convertURL($strategy_type);
+                $conditions[] = ["strategy_type", "=",$strategy_type];
             }
         }
 
@@ -41,6 +43,12 @@ class PropertyDBService
             }
         }
         return $conditions;
+    }
+
+    public function convertURL($str){
+        $hash=["amp;","gt;","lt;", "quot;","#039;"];
+        $values=["&","<",">",'"',"'"];
+        return str_replace($hash,$values,$str);
     }
 
     public function getPriceRange(Request $request)
@@ -90,14 +98,14 @@ class PropertyDBService
         $orderType = $request->has("orderType") ? $request->get("orderType") : "asc";
 
         if (!empty($keyword)) {
-            
+
             $keyword_arr = explode(",", $keyword);
             if(count($keyword_arr)===3){
                 $property_query = $property_query->where(function ($query) use ($keyword,$keyword_arr) {
                     $suburb = $keyword_arr[0];
                     $state = $keyword_arr[1];
                     $postcode = $keyword_arr[2];
-                    
+
                     $query->orWhere("suburb", "LIKE", "%{$suburb}%")
                     ->orWhere("postcode", "LIKE", "%{$postcode}%")
                     ->orWhere("state", "LIKE", "%{$state}%")
@@ -108,8 +116,8 @@ class PropertyDBService
             else{
                 $property_query=$property_query->where("display_id","=",Str::lower($keyword));
             }
-            
-            
+
+
 
             // $property_query = $property_query->where(function ($query) use ($keyword) {
             //     return $query->orWhere("suburb", "LIKE", Str::upper($keyword))
@@ -176,7 +184,7 @@ class PropertyDBService
 
     public function getChildListing($property_id)
     {
-        
+
         return app('db')->table("properties")->select("*")
             ->where("parent_property_id", $property_id)
             ->where("status", "!=", "Off Market")
