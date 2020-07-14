@@ -19,6 +19,8 @@ class APIController extends Controller
     }
 
     public function getAllListings(Request $request){
+
+
         return response()->json($this->propertyDB->getPropertiesFromDB($request),200);
     }
 
@@ -38,7 +40,6 @@ class APIController extends Controller
 
 
     public function suggestKeyword(Request $request){
-        
         $search_term = $request->get('search_term');
         return response()->json($this->propertyDB->getSuggestedKeyword($search_term),200);
     }
