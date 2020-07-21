@@ -29,6 +29,15 @@ class PropertyDBService
                 $conditions[] = ["state", "=", $request->get("state")];
             }
         }
+
+        if ($request->has("b2b_partner")) {
+            if (!empty($request->get("b2b_partner"))) {
+                $conditions[] = ["b2b_partner", "=", $request->get("b2b_partner")];
+            }
+        }
+
+
+
         return $conditions;
     }
 
@@ -92,7 +101,7 @@ class PropertyDBService
     {
         $property_type=$this->generateWhereInRequest($request,"property_type");
         $strategy_type=$this->generateWhereInRequest($request,"strategy_type");
-        //$builder_type=$this->generateWhereInRequest($request,"builder_type");
+
 
         $conditions = array_merge($this->handleSearchConditions($request),
             $this->getPriceRange($request),
