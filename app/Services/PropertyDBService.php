@@ -29,6 +29,15 @@ class PropertyDBService
                 $conditions[] = ["state", "=", $request->get("state")];
             }
         }
+
+        if ($request->has("b2b_partner")) {
+            if (!empty($request->get("b2b_partner"))) {
+                $conditions[] = ["b2b_partner", "=", $request->get("b2b_partner")];
+            }
+        }
+
+
+
         return $conditions;
     }
 
@@ -92,6 +101,7 @@ class PropertyDBService
     {
         $property_type=$this->generateWhereInRequest($request,"property_type");
         $strategy_type=$this->generateWhereInRequest($request,"strategy_type");
+
 
         $conditions = array_merge($this->handleSearchConditions($request),
             $this->getPriceRange($request),
@@ -228,7 +238,14 @@ class PropertyDBService
     {
         $property_types = $this->property_table->select("property_type")->distinct()->where("property_type", "!=", "")->get()->pluck('property_type');
         $strategy_types = $this->property_table->select(["strategy_type"])->distinct()->where("strategy_type", "!=", "")->get()->pluck("strategy_type");
+
         return compact("property_types", "strategy_types");
+    }
+
+    public function getB2BPartners()
+    {
+        $b2b_partners = $this->property_table->select(["b2b_partner"])->distinct()->where("b2b_partner", "!=", "")->get()->pluck("b2b_partner");
+        return compact("b2b_partners");
     }
 
     public function getPropertyAddress()

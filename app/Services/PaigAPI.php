@@ -18,6 +18,7 @@ class PaigAPI
 
     public function getServerAPI($page_number)
     {
+        set_time_limit(120);
         $ch = curl_init();
 
         curl_setopt($ch, CURLOPT_URL, "http://paighub.paig.com.au/backend/paig_api/all_sale_property");
