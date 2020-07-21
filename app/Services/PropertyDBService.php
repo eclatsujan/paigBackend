@@ -24,19 +24,6 @@ class PropertyDBService
     {
         $conditions = [];
         //Todo Handle business logic for handle conditions
-        if ($request->has("property_type")) {
-            if (!empty($request->get("property_type"))) {
-                $conditions[] = ["property_type", "=", $request->get("property_type")];
-            }
-        }
-        if ($request->has("strategy_type")) {
-            if (!empty($request->get("strategy_type"))) {
-                $strategy_type=$request->get("strategy_type");
-                $strategy_type=$this->convertURL($strategy_type);
-                $conditions[] = ["strategy_type", "=",$strategy_type];
-            }
-        }
-
         if ($request->has("state")) {
             if (!empty($request->get("state"))) {
                 $conditions[] = ["state", "=", $request->get("state")];
@@ -45,10 +32,18 @@ class PropertyDBService
         return $conditions;
     }
 
+    public function generate_array($type){
+        $type_arr = explode(",",$type);
+        return $type_arr;
+    }
+
     public function convertURL($str){
-        $hash=["amp;","gt;","lt;", "quot;","#039;"];
-        $values=["&","<",">",'"',"'"];
-        return str_replace($hash,$values,$str);
+        $hash=["amp;","gt;","lt;", "quot;","#039;","plus;"];
+        $values=["&","<",">",'"',"'","+"];
+
+
+       return str_replace($hash,$values,$str);
+
     }
 
     public function getPriceRange(Request $request)
@@ -81,16 +76,41 @@ class PropertyDBService
         return [$status];
     }
 
+    public function generateWhereInRequest($request,$type){
+        $results=[];
+        if ($request->has($type)) {
+            $parameters=$request->get($type);
+            if (!empty($parameters)) {
+                $results = explode(",",$this->convertURL($parameters));
+            }
+        }
+        return $results;
+    }
+
 
     public function getPropertiesFromDB(Request $request)
     {
+        $property_type=$this->generateWhereInRequest($request,"property_type");
+        $strategy_type=$this->generateWhereInRequest($request,"strategy_type");
 
-        $conditions = array_merge($this->handleSearchConditions($request), $this->getPriceRange($request), $this->getStatus($request));
+        $conditions = array_merge($this->handleSearchConditions($request),
+            $this->getPriceRange($request),
+            $this->getStatus($request)
+        );
+
 
         $property_query = $this->property_table
             ->where($conditions)
             ->where("status", "!=", "Off Market")
             ->where("status", "!=", "Selling Fast");
+
+        if(!empty($property_type)){
+            $property_query=$property_query->whereIn("property_type",$property_type);
+        }
+
+        if(!empty($strategy_type)){
+            $property_query=$property_query->whereIn("strategy_type",$strategy_type);
+        }
 
         $keyword = $request->get("keyword");
 
@@ -119,6 +139,7 @@ class PropertyDBService
 
 
 
+
             // $property_query = $property_query->where(function ($query) use ($keyword) {
             //     return $query->orWhere("suburb", "LIKE", Str::upper($keyword))
             //         ->orWhere("postcode", "LIKE", $keyword)
@@ -127,8 +148,11 @@ class PropertyDBService
             //         ->orWhere("title", "LIKE", $keyword);
             // });
         }
+
         // var_dump($property_query);
         $property_results = $property_query->orderBy($orderBy, $orderType)->paginate(10);
+
+
 
         $properties_list = $property_results->getCollection()->transform(function ($property) {
             if ($property->attachments !== "") {
