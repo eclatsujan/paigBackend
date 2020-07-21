@@ -21,8 +21,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::middleware(['client_credentials'])->group(function(){
     //For API Access
     Route::get('/getInitialData','Front\APIController@getInitialData');
+    Route::get('/getB2BPartners','Front\APIController@getB2BPartners');
     Route::get("/list","Front\APIController@getAllListings");
     Route::get("/list/detail/{display_id}","Front\APIController@singleDetail");
     Route::get("/suggestedKeyword","Front\APIController@suggestKeyword");
 });
- 

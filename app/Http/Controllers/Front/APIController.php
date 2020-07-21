@@ -24,6 +24,10 @@ class APIController extends Controller
         return response()->json($this->propertyDB->getPropertiesFromDB($request),200);
     }
 
+    public function getB2BPartners(){
+        return response()->json($this->propertyDB->getB2BPartners(),200);
+    }
+
     public function getInitialData(){
         return response()->json($this->propertyDB->getInitialData(),200);
     }
