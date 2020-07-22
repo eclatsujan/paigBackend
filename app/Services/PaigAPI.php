@@ -70,7 +70,7 @@ class PaigAPI
         return $this->property_db->statement( $sql );
     }
 
-    private function setDB($response)
+    public function setDB($response)
     {
         if ($response["status"] === true) {
             foreach ($response["data"] as $property) {
