@@ -16,7 +16,7 @@ class PaigQueue extends Job
     {
         $paig=app(PaigAPI::class);
         $res=$paig->getPropertyListings(1);
-        for($i=0;$i<$res["page_total"];$i++){
+        for($i=1x;$i<=$res["page_total"];$i++){
             dispatch(new PaigAPIJob($i));
         }
 
