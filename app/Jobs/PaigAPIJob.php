@@ -13,10 +13,11 @@ class PaigAPIJob extends Job
     public $tries = 5;
 
     private $page_number;
+
     /**
      * Create a new job instance.
      *
-     * @return void
+     * @param $i
      */
     public function __construct($i)
     {

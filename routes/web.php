@@ -38,5 +38,6 @@ Route::middleware("auth")->prefix("admin")->group(function(){
     Route::get("clients","Admin\ClientController@viewClients");
     Route::get("jobs/view",'Admin\JobController@viewJobs');
     Route::get("job/run",'Admin\JobController@runLocationListingJobs');
+    Route::get("job/test",'Admin\JobController@testSingleJob');
 });
 
