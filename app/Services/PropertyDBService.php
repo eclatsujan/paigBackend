@@ -35,9 +35,6 @@ class PropertyDBService
                 $conditions[] = ["b2b_partner", "=", $request->get("b2b_partner")];
             }
         }
-
-
-
         return $conditions;
     }
 
@@ -60,7 +57,6 @@ class PropertyDBService
         $conditions = [];
         if ($request->has("min_price")) {
             if (!empty($request->get("min_price"))) {
-
                 $conditions[] = ["from_price", ">=", (float) $request->get("min_price")];
             }
         }
@@ -130,39 +126,32 @@ class PropertyDBService
         if (!empty($keyword)) {
 
             $keyword_arr = explode(",", $keyword);
-            if(count($keyword_arr)===3){
+
+            if(is_numeric($keyword_arr[0])){
+                $property_query = $property_query->where("display_id","=",Str::lower($keyword));
+            }
+            else
+            {
                 $property_query = $property_query->where(function ($query) use ($keyword,$keyword_arr) {
                     $suburb = $keyword_arr[0];
-                    $state = $keyword_arr[1];
-                    $postcode = $keyword_arr[2];
+                    $state="";
+                    $postcode="";
+
+                    if(count($keyword_arr) === 3){
+                        $state = "%".$keyword_arr[1]."%";
+                        $postcode = "%".$keyword_arr[2]."%";
+                    }
 
                     $query->orWhere("suburb", "LIKE", "%{$suburb}%")
-                    ->orWhere("postcode", "LIKE", "%{$postcode}%")
-                    ->orWhere("state", "LIKE", "%{$state}%")
-                    ->orWhere("display_id", "=", Str::lower($keyword))
-                    ->orWhere("title", "LIKE", "%{$keyword}%");
+                        ->orWhere("postcode", "LIKE", "{$postcode}")
+                        ->orWhere("state", "LIKE", "{$state}")
+                        ->orWhere("title", "LIKE", "%{$keyword}%");
                 });
             }
-            else{
-                $property_query=$property_query->where("display_id","=",Str::lower($keyword));
-            }
 
-
-
-
-            // $property_query = $property_query->where(function ($query) use ($keyword) {
-            //     return $query->orWhere("suburb", "LIKE", Str::upper($keyword))
-            //         ->orWhere("postcode", "LIKE", $keyword)
-            //         ->orWhere("state", "LIKE", Str::upper($keyword))
-            //         ->orWhere("display_id", "=", Str::lower($keyword))
-            //         ->orWhere("title", "LIKE", $keyword);
-            // });
         }
 
-        // var_dump($property_query);
         $property_results = $property_query->orderBy($orderBy, $orderType)->paginate(10);
-
-
 
         $properties_list = $property_results->getCollection()->transform(function ($property) {
             if ($property->attachments !== "") {

@@ -19,8 +19,7 @@ class APIController extends Controller
     }
 
     public function getAllListings(Request $request){
-
-
+        
         return response()->json($this->propertyDB->getPropertiesFromDB($request),200);
     }
 
