@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Jobs;
+
 use App\Services\PaigAPI;
 
 class PaigAPIJob extends Job
