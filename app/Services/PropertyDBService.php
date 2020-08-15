@@ -195,9 +195,11 @@ class PropertyDBService
             }
             return $this->property_table->select("suburb", "state", "postcode")
             ->distinct()
-            ->where('suburb', 'LIKE', "{$keyword}%")
-            ->orWhere('postcode', 'LIKE', "{$keyword}%")
-            ->where("state", "LIKE", "{$state}%")
+            ->where(function($query) use($keyword){
+                $query->where('suburb', 'LIKE', "{$keyword}%")
+                        ->orWhere('postcode', 'LIKE', "{$keyword}%");
+            })
+            ->where("state", "=", "{$state}")
             ->get();
         }
 
