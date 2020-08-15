@@ -170,14 +170,38 @@ class PropertyDBService
 
     public function getSuggestedKeyword($keyword, $state = '')
     {
-        $state = !empty($state) ? $state : $keyword;
+//        $state = strtoupper(!empty($state) ? $state : $keyword);
+//        if (strtoupper($keyword) === $state):
+//              $keyword = "";
+//        endif;
+//
+//        return $this->property_table->select("suburb", "state", "postcode")
+//            ->distinct()
+//            ->where('suburb', 'LIKE', "{$keyword}%")
+//            ->orWhere('postcode', 'LIKE', "{$keyword}%")
+//            ->orWhere("state", "LIKE", "{$state}%")
+//            ->get();
 
-        return $this->property_table->select("suburb", "state", "postcode")
+        if(empty($state)){
+            return $this->property_table->select("suburb", "state", "postcode")
             ->distinct()
             ->where('suburb', 'LIKE', "{$keyword}%")
-            ->orWhere("state", "LIKE", "{$state}%")
             ->orWhere('postcode', 'LIKE', "{$keyword}%")
+            ->orWhere("state", "LIKE", "{$keyword}%")
             ->get();
+        }else{
+            return $this->property_table->select("suburb", "state", "postcode")
+            ->distinct()
+            ->where('suburb', 'LIKE', "{$keyword}%")
+            ->orWhere('postcode', 'LIKE', "{$keyword}%")
+            ->where("state", "LIKE", "{$state}%")
+            ->get();
+        }
+
+
+
+
+
     }
 
     public function getSingleProperty($display_id)
