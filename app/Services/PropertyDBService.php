@@ -38,17 +38,19 @@ class PropertyDBService
         return $conditions;
     }
 
-    public function generate_array($type){
-        $type_arr = explode(",",$type);
+    public function generate_array($type)
+    {
+        $type_arr = explode(",", $type);
         return $type_arr;
     }
 
-    public function convertURL($str){
-        $hash=["amp;","gt;","lt;", "quot;","#039;","plus;"];
-        $values=["&","<",">",'"',"'","+"];
+    public function convertURL($str)
+    {
+        $hash = ["amp;", "gt;", "lt;", "quot;", "#039;", "plus;"];
+        $values = ["&", "<", ">", '"', "'", "+"];
 
 
-       return str_replace($hash,$values,$str);
+        return str_replace($hash, $values, $str);
 
     }
 
@@ -57,12 +59,12 @@ class PropertyDBService
         $conditions = [];
         if ($request->has("min_price")) {
             if (!empty($request->get("min_price"))) {
-                $conditions[] = ["from_price", ">=", (float) $request->get("min_price")];
+                $conditions[] = ["from_price", ">=", (float)$request->get("min_price")];
             }
         }
         if ($request->has("max_price")) {
             if (!empty($request->get("max_price"))) {
-                $conditions[] = ["to_price", "<=", (float) $request->get("max_price")];
+                $conditions[] = ["to_price", "<=", (float)$request->get("max_price")];
             }
         }
         return $conditions;
@@ -81,12 +83,13 @@ class PropertyDBService
         return [$status];
     }
 
-    public function generateWhereInRequest($request,$type){
-        $results=[];
+    public function generateWhereInRequest($request, $type)
+    {
+        $results = [];
         if ($request->has($type)) {
-            $parameters=$request->get($type);
+            $parameters = $request->get($type);
             if (!empty($parameters)) {
-                $results = explode(",",$this->convertURL($parameters));
+                $results = explode(",", $this->convertURL($parameters));
             }
         }
         return $results;
@@ -95,8 +98,8 @@ class PropertyDBService
 
     public function getPropertiesFromDB(Request $request)
     {
-        $property_type=$this->generateWhereInRequest($request,"property_type");
-        $strategy_type=$this->generateWhereInRequest($request,"strategy_type");
+        $property_type = $this->generateWhereInRequest($request, "property_type");
+        $strategy_type = $this->generateWhereInRequest($request, "strategy_type");
 
 
         $conditions = array_merge($this->handleSearchConditions($request),
@@ -110,12 +113,12 @@ class PropertyDBService
             ->where("status", "!=", "Off Market")
             ->where("status", "!=", "Selling Fast");
 
-        if(!empty($property_type)){
-            $property_query=$property_query->whereIn("property_type",$property_type);
+        if (!empty($property_type)) {
+            $property_query = $property_query->whereIn("property_type", $property_type);
         }
 
-        if(!empty($strategy_type)){
-            $property_query=$property_query->whereIn("strategy_type",$strategy_type);
+        if (!empty($strategy_type)) {
+            $property_query = $property_query->whereIn("strategy_type", $strategy_type);
         }
 
         $keyword = $request->get("keyword");
@@ -127,19 +130,17 @@ class PropertyDBService
 
             $keyword_arr = explode(",", $keyword);
 
-            if(is_numeric($keyword_arr[0])){
-                $property_query = $property_query->where("display_id","=",Str::lower($keyword));
-            }
-            else
-            {
-                $property_query = $property_query->where(function ($query) use ($keyword,$keyword_arr) {
+            if (is_numeric($keyword_arr[0])) {
+                $property_query = $property_query->where("display_id", "=", Str::lower($keyword));
+            } else {
+                $property_query = $property_query->where(function ($query) use ($keyword, $keyword_arr) {
                     $suburb = $keyword_arr[0];
-                    $state="";
-                    $postcode="";
+                    $state = "";
+                    $postcode = "";
 
-                    if(count($keyword_arr) === 3){
-                        $state = "%".$keyword_arr[1]."%";
-                        $postcode = "%".$keyword_arr[2]."%";
+                    if (count($keyword_arr) === 3) {
+                        $state = "%" . $keyword_arr[1] . "%";
+                        $postcode = "%" . $keyword_arr[2] . "%";
                     }
 
                     $query->orWhere("suburb", "LIKE", "%{$suburb}%")
@@ -159,7 +160,7 @@ class PropertyDBService
             }
             return $property;
         });
-        return  new \Illuminate\Pagination\LengthAwarePaginator(
+        return new \Illuminate\Pagination\LengthAwarePaginator(
             $properties_list,
             $property_results->total(),
             $property_results->perPage(),
@@ -167,18 +168,16 @@ class PropertyDBService
         );
     }
 
-    public function getSuggestedKeyword($keyword)
+    public function getSuggestedKeyword($keyword, $state = '')
     {
-        $suggested_data  =  $this->property_table->select("suburb", "state", "postcode")
+        $state = !empty($state) ? $state : $keyword;
+
+        return $this->property_table->select("suburb", "state", "postcode")
             ->distinct()
             ->where('suburb', 'LIKE', "{$keyword}%")
-            ->orWhere('state', 'LIKE', "{$keyword}%")
+            ->orWhere("state", "LIKE", "{$state}%")
             ->orWhere('postcode', 'LIKE', "{$keyword}%")
-            // ->orWhere('street_address', 'LIKE', "%{$keyword}%")
-            // ->orWhere('street_number', 'LIKE', "%{$keyword}%")
             ->get();
-
-        return $suggested_data;
     }
 
     public function getSingleProperty($display_id)
@@ -190,7 +189,7 @@ class PropertyDBService
             if ($property->attachments !== "") {
                 $property->attachments = unserialize($property->attachments);
             }
-            $property->lists = $this->getChildListing((int) $property->property_id);
+            $property->lists = $this->getChildListing((int)$property->property_id);
 
             if (intval($property->parent_property_id) !== 0) {
                 $property->parent_property_data = $this->getParentPropertyData($property->parent_property_id);
