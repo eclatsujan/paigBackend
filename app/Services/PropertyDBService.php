@@ -190,6 +190,9 @@ class PropertyDBService
             ->orWhere("state", "LIKE", "{$keyword}%")
             ->get();
         }else{
+            if(strtoupper($keyword) == strtoupper($state)){
+                $keyword = "";
+            }
             return $this->property_table->select("suburb", "state", "postcode")
             ->distinct()
             ->where('suburb', 'LIKE', "{$keyword}%")
