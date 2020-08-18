@@ -35,6 +35,12 @@ class PropertyDBService
                 $conditions[] = ["b2b_partner", "=", $request->get("b2b_partner")];
             }
         }
+
+        if ($request->has("business_name")) {
+            if (!empty($request->get("business_name"))) {
+                $conditions[] = ["business_name", "=", $request->get("business_name")];
+            }
+        }
         return $conditions;
     }
 
@@ -261,8 +267,23 @@ class PropertyDBService
 
     public function getB2BPartners()
     {
-        $b2b_partners = $this->property_table->select(["b2b_partner"])->distinct()->where("b2b_partner", "!=", "")->get()->pluck("b2b_partner");
+        $b2b_partners = $this->property_table
+            ->select(["b2b_partner"])
+            ->distinct()
+            ->where("b2b_partner", "!=", "")
+            ->get()
+            ->pluck("b2b_partner");
         return compact("b2b_partners");
+    }
+
+    public function getBuildContractDevelopers(){
+        $build_contract_developers = $this->property_table
+            ->select("business_name")
+            ->distinct()
+            ->where("property_type","=","Build Contract")
+            ->get()
+            ->pluck("business_name");
+        return compact("build_contract_developers");
     }
 
     public function getPropertyAddress()
