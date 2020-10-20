@@ -281,6 +281,7 @@ class PropertyDBService
             ->select("business_name")
             ->distinct()
             ->where("property_type","=","Build Contract")
+            ->orderBy('business_name','ASC')
             ->get()
             ->pluck("business_name");
         return compact("build_contract_developers");
