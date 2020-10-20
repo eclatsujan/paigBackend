@@ -35,12 +35,6 @@ class PropertyDBService
                 $conditions[] = ["b2b_partner", "=", $request->get("b2b_partner")];
             }
         }
-
-        if ($request->has("business_name")) {
-            if (!empty($request->get("business_name"))) {
-                $conditions[] = ["business_name", "=", $request->get("business_name")];
-            }
-        }
         return $conditions;
     }
 
@@ -106,6 +100,7 @@ class PropertyDBService
     {
         $property_type = $this->generateWhereInRequest($request, "property_type");
         $strategy_type = $this->generateWhereInRequest($request, "strategy_type");
+        $business=$this->generateWhereInRequest($request, "business_name");
 
 
         $conditions = array_merge($this->handleSearchConditions($request),
@@ -118,6 +113,11 @@ class PropertyDBService
             ->where($conditions)
             ->where("status", "!=", "Off Market")
             ->where("status", "!=", "Selling Fast");
+
+
+        if (!empty($business)) {
+            $property_query=$property_query->whereIn("business_name",$business);
+        }
 
         if (!empty($property_type)) {
             $property_query = $property_query->whereIn("property_type", $property_type);
@@ -157,9 +157,10 @@ class PropertyDBService
             }
 
         }
-
         $property_results = $property_query->orderBy($orderBy, $orderType)->paginate(10);
 
+
+//dd($property_query->toSql());
         $properties_list = $property_results->getCollection()->transform(function ($property) {
             if ($property->attachments !== "") {
                 $property->attachments = unserialize($property->attachments);
