@@ -137,8 +137,35 @@ class PropertyDBService
             $keyword_arr = explode(",", $keyword);
 
             if (is_numeric($keyword_arr[0])) {
-                $property_query = $property_query->where("display_id", "=", Str::lower($keyword));
-            } else {
+                $property_query = $property_query->where(function($query) use($keyword){
+                    $query->orWhere("display_id", "=", $keyword);
+                    $query->orWhere("postcode",'LIKE',"%{$keyword}%");
+                });
+            }
+            else if(count($keyword_arr)==1){
+                $state=[
+                    "new south wales",
+                    "western australia",
+                    "south australia",
+                    "tasmania",
+                    "australian capital territory",
+                    "victoria",
+                    "northern territory",
+                    "queensland"
+                ];
+
+                $replace=["NSW","WA","SA","TAS","ACT","VIC","NT","QLD"];
+
+                $keyword=str_replace($state, $replace, strtolower($keyword));
+
+                $property_query = $property_query->where(function ($query) use ($keyword) {
+                    $query->orWhere("suburb", "LIKE", "%{$keyword}%")
+                        ->orWhere("postcode", "LIKE", "%{$keyword}%")
+                        ->orWhere("state", "LIKE", "%{$keyword}%")
+                        ->orWhere("title", "LIKE", "%{$keyword}%");
+                });
+            }
+            else {
                 $property_query = $property_query->where(function ($query) use ($keyword, $keyword_arr) {
                     $suburb = $keyword_arr[0];
                     $state = "";
@@ -177,18 +204,6 @@ class PropertyDBService
 
     public function getSuggestedKeyword($keyword, $state = '')
     {
-//        $state = strtoupper(!empty($state) ? $state : $keyword);
-//        if (strtoupper($keyword) === $state):
-//              $keyword = "";
-//        endif;
-//
-//        return $this->property_table->select("suburb", "state", "postcode")
-//            ->distinct()
-//            ->where('suburb', 'LIKE', "{$keyword}%")
-//            ->orWhere('postcode', 'LIKE', "{$keyword}%")
-//            ->orWhere("state", "LIKE", "{$state}%")
-//            ->get();
-
         if(empty($state)){
             return $this->property_table->select("suburb", "state", "postcode")
             ->distinct()
@@ -209,11 +224,6 @@ class PropertyDBService
             ->where("state", "=", "{$state}")
             ->get();
         }
-
-
-
-
-
     }
 
     public function getSingleProperty($display_id)
