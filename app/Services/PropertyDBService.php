@@ -112,7 +112,9 @@ class PropertyDBService
         $property_query = $this->property_table
             ->where($conditions)
             ->where("status", "!=", "Off Market")
-            ->where("status", "!=", "Selling Fast");
+            ->where("status", "!=", "Selling Fast")
+            ->where("hide_listing", "!=", 1);
+
 
 
         if (!empty($business)) {
