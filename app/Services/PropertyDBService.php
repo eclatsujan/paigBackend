@@ -67,8 +67,31 @@ class PropertyDBService
                 $conditions[] = ["to_price", "<=", (float)$request->get("max_price")];
             }
         }
+
         return $conditions;
     }
+
+
+
+   public function getFloorAreaRange(Request $request)
+    {
+        $conditions = [];
+
+        if ($request->has("min_floor_area")) {
+            if (!empty($request->get("min_floor_area"))) {
+                $conditions[] = ["floor_area", ">=", (int)$request->get("min_floor_area")];
+            }
+        }
+
+        if ($request->has("max_floor_area")) {
+            if (!empty($request->get("max_floor_area"))) {
+                $conditions[] = ["floor_area", "<=", (int)$request->get("max_floor_area")];
+            }
+        }
+        return $conditions;
+    }
+
+
 
     public function getStatus(Request $request)
     {
@@ -98,22 +121,45 @@ class PropertyDBService
 
     public function getPropertiesFromDB(Request $request)
     {
+
         $property_type = $this->generateWhereInRequest($request, "property_type");
         $strategy_type = $this->generateWhereInRequest($request, "strategy_type");
+
+        //function to convert string to array for where_in query
         $business=$this->generateWhereInRequest($request, "business_name");
 
 
         $conditions = array_merge($this->handleSearchConditions($request),
             $this->getPriceRange($request),
+            $this->getFloorAreaRange($request),
             $this->getStatus($request)
         );
+
 
 
         $property_query = $this->property_table
             ->where($conditions)
             ->where("status", "!=", "Off Market")
             ->where("status", "!=", "Selling Fast")
+            ->where("floor_area", "!=", "")
             ->where("hide_listing", "!=", 1);
+
+
+//        if ($request->has("min_floor_area") || $request->has("max_floor_area") ) {
+//            $min_area = 0;
+//            $max_area = 1000;
+//            if (!empty($request->get("min_floor_area"))) {
+//                $min_area =  (int)$request->get("min_floor_area");
+//            }
+//
+//            if(!empty($request->get("max_floor_area"))){
+//                $max_area =  (int)$request->get("max_floor_area");
+//            }
+//
+//            $property_query=$property_query->whereBetween("floor_area",[$min_area, $max_area]);
+//
+//        }
+
 
 
 
@@ -186,10 +232,11 @@ class PropertyDBService
             }
 
         }
+
         $property_results = $property_query->orderBy($orderBy, $orderType)->paginate(10);
 
 
-//dd($property_query->toSql());
+
         $properties_list = $property_results->getCollection()->transform(function ($property) {
             if ($property->attachments !== "") {
                 $property->attachments = unserialize($property->attachments);
