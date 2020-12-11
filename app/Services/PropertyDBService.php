@@ -141,7 +141,6 @@ class PropertyDBService
             ->where($conditions)
             ->where("status", "!=", "Off Market")
             ->where("status", "!=", "Selling Fast")
-            ->where("floor_area", "!=", "")
             ->where("hide_listing", "!=", 1);
 
 
