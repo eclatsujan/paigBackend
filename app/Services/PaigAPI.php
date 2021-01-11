@@ -21,7 +21,7 @@ class PaigAPI
         set_time_limit(240);
         $ch = curl_init();
 
-        curl_setopt($ch, CURLOPT_URL, "http://paighub.paig.com.au/backend/paig_api/all_sale_property");
+        curl_setopt($ch, CURLOPT_URL, "https://dashboard.hashtaghub.com.au/backend/paig_api/all_sale_property");
         curl_setopt($ch, CURLOPT_POST, 1);
 
         // In real life you should use something like:
